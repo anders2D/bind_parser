@@ -17,7 +17,7 @@ def send_dns_queries(queries: any):
     for chunk in chunked_queries:
         requests.post(url, headers=HEADERS, json=chunk)
 
-def get_chunked_list(objects:list, chunk_limit:int):
+def get_chunked_list(objects:list, chunk_limit:int = 10):
     """ return a generator of lists that contain chunks """
     for i in range(0, len(objects), chunk_limit):
         yield objects[i:i+chunk_limit]

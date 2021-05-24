@@ -6,6 +6,9 @@ import pandas
 import api
 import bind_parser
 
+# native libraries
+import sys
+
 def get_top(dataframe:any, column_name: str, limit:int = 5):
     rows_count = len(df)
     df_by_name = df.groupby([column_name]).size().reset_index(name='counts')
@@ -15,19 +18,25 @@ def get_top(dataframe:any, column_name: str, limit:int = 5):
 
     return df_by_name
 
-bind_data = bind_parser.load("queries")
 
-api.send_dns_queries(bind_data)
+if __name__ == '__main__':
+    args = sys.argv
+    if not len(args) > 1:
+        print("[ERROR] Please give one argument")
+        exit()
+    else:
+        bind_data = bind_parser.load(args[1])
 
-df = pandas.DataFrame(data=bind_data)
+    print("Sending data to lumu API")
+    api.send_dns_queries(bind_data)
+    df = pandas.DataFrame(data=bind_data)
 
 
-print(f"Total records {len(df)}")
+    print(f"Total records {len(df)}")
 
+    print("\nClient IPs Rank\n--")
+    print(get_top(df,column_name = 'name'))
 
-print("\nClient IPs Rank\n--")
-print(get_top(df,column_name = 'name'))
-
-print("\nHost Rank\n--")
-print(get_top(df,column_name = 'client_ip'))
+    print("\nHost Rank\n--")
+    print(get_top(df,column_name = 'client_ip'))
 
